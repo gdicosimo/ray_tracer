@@ -131,7 +131,7 @@ impl Display for Bvh {
 
 impl Bvh {
     fn fmt_recursive(&self, f: &mut Formatter<'_>, indent_level: usize) -> fmt::Result {
-        let indent = "  ".repeat(indent_level); // Dos espacios por nivel de indentación
+        let indent = "  ".repeat(indent_level);
 
         match self {
             Bvh::Empty => write!(f, "{}Empty BVH", indent),

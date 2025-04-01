@@ -192,6 +192,10 @@ impl Camera {
 
         let sample_color = self.ray_color(&scattered, world, lights, depth - 1);
 
+        if pdf_val.abs() < EPSILON || !(scattering_pdf / pdf_val).is_finite() {
+            return emitted;
+        }
+
         let color_from_scatter = (scattering_pdf / pdf_val) * sample_color.mul(srec.attenuation());
 
         emitted + color_from_scatter

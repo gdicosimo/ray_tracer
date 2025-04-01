@@ -58,17 +58,17 @@ impl Scene for Svrnc {
         CameraBuilder::uninitialized()
             .aspect_ratio(4.0)
             .image_width(Self::SCENE_WIDTH as u32)
-            .samples_per_pixel(1000)
-            .max_depth(50)
+            .samples_per_pixel(3000)
+            .max_depth(100)
             .vfov(40.0)
             .look_from(Point3::new(
-                Self::SCENE_WIDTH * 0.556,
-                Self::SCENE_HEIGHT * 0.556,
-                -600.0,
+                Self::SCENE_WIDTH * 0.5,
+                Self::SCENE_HEIGHT * 0.5,
+                -Self::SCENE_DEPTH,
             ))
             .look_at(Point3::new(
-                Self::SCENE_WIDTH * 0.556,
-                Self::SCENE_HEIGHT * 0.556,
+                Self::SCENE_WIDTH * 0.5,
+                Self::SCENE_HEIGHT * 0.5,
                 0.0,
             ))
             .vup(Vec3::new(0.0, 1.0, 0.0))
@@ -94,9 +94,9 @@ impl Scene for Svrnc {
         let (l_wall, r_wall) = self.create_opposite_walls();
         world.push(l_wall);
         world.push(r_wall);
-        //
+
         world.push(self.create_desktops());
-        //
+
         world.push(Arc::new(Sphere::new(
             Point3::new(300.0, 50.1, Self::SCENE_DEPTH / 3.0 + 85.0),
             50.0,
@@ -112,13 +112,6 @@ impl Scene for Svrnc {
         lights.push(Arc::new(Sphere::new(
             Point3::new(400.0, 50.1, Self::SCENE_DEPTH / 3.0),
             50.0,
-            self.data.empty(),
-        )));
-
-        lights.push(Arc::new(Quad::new(
-            Point3::new(900.0, 100.0, 200.0),
-            Vec3::new(0.0, 60.0, 0.0),
-            Vec3::new(100.0, 0.0, 0.0),
             self.data.empty(),
         )));
 
@@ -184,6 +177,8 @@ impl Svrnc {
             Vec3::new(0.0, 0.0, Self::SCENE_DEPTH + Self::PLINTH_DEPTH),
             self.mats.white(),
         ));
+
+        //
 
         block.push(wall);
         block.push(header);
@@ -645,7 +640,7 @@ impl Svrnc {
             Vec3::new(
                 location_box_w - Self::TABLE_WIDTH - 0.1,
                 0.0,
-                location_box_d - Self::TABLE_DEPTH + (Self::PANEL_WIDTH - 75.0),
+                location_box_d + 75.0 - Self::TABLE_DEPTH - Self::PANEL_DEPTH,
             ),
         ));
 
@@ -704,8 +699,8 @@ impl Svrnc {
             let mut block = HittableList::with_capacity(32);
 
             let h_panel = Arc::new(Cuboid::new(
-                Point3::ORIGIN,
-                Point3::new(WIDTH, THICKNESS, DEPTH * 0.33),
+                Point3::new(THICKNESS, 0.0, 0.0),
+                Point3::new(WIDTH - 2.0 * THICKNESS, THICKNESS, DEPTH * 0.33),
                 svrnc.mats.white(),
             ));
 
@@ -717,7 +712,7 @@ impl Svrnc {
 
             let top = Arc::new(Translation::new(
                 h_panel.clone(),
-                Vec3::new(0.0, HEIGHT - OFFSET, 0.0),
+                Vec3::new(0.0, HEIGHT - THICKNESS, 0.0),
             ));
 
             let u_right = Arc::new(Translation::new(
@@ -748,40 +743,40 @@ impl Svrnc {
 
             //--------------------------
 
-            const M_HEIGHT: f32 = HEIGHT * 0.5 - OFFSET;
+            const M_HEIGHT: f32 = HEIGHT * 0.5 - OFFSET - THICKNESS;
             let angle: f32 = f32::atan(M_HEIGHT * 0.2 / DEPTH * 0.66).to_degrees();
 
-            let mut left_panel = HittableList::with_capacity(8);
+            let mut right_panel = HittableList::with_capacity(8);
 
             let b_panel = Arc::new(Quad::new(
-                Point3::new(0.0, M_HEIGHT * 0.2, DEPTH * 0.33),
+                Point3::new(0.0, THICKNESS, DEPTH * 0.33),
                 Vec3::new(0.0, 0.0, DEPTH * 0.66),
-                Vec3::new(0.0, M_HEIGHT * 0.8, 0.0),
+                Vec3::new(0.0, M_HEIGHT, 0.0),
                 svrnc.mats.white(),
             ));
 
             let b_triangle = Arc::new(Triangle::new(
-                Point3::new(0.0, M_HEIGHT * 0.2, DEPTH * 0.33),
+                Point3::new(0.0, THICKNESS, DEPTH * 0.33),
                 Vec3::new(0.0, 0.0, DEPTH * 0.66),
-                Vec3::new(0.0, -M_HEIGHT * 0.2, 0.0),
+                Vec3::new(0.0, -THICKNESS, 0.0),
                 svrnc.mats.white(),
             ));
 
             let u_panel = Arc::new(Translation::new(
                 b_panel.clone(),
-                Vec3::new(0.0, M_HEIGHT * 0.8 + OFFSET, 0.0),
+                Vec3::new(0.0, M_HEIGHT + 2.0 + OFFSET, 0.0),
             ));
 
             let u_triangle = Arc::new(Triangle::new(
-                Point3::new(0.0, HEIGHT * 0.9, DEPTH * 0.33),
+                Point3::new(0.0, HEIGHT - THICKNESS, DEPTH * 0.33),
                 Vec3::new(0.0, 0.0, DEPTH * 0.66),
-                Vec3::new(0.0, M_HEIGHT * 0.2, 0.0),
+                Vec3::new(0.0, THICKNESS, 0.0),
                 svrnc.mats.white(),
             ));
 
             let fill_back = Arc::new(Quad::new(
-                Point3::new(0.0, HEIGHT * 0.2, DEPTH),
-                Vec3::new(0.0, HEIGHT * 0.8, 0.0),
+                Point3::new(0.0, THICKNESS, DEPTH),
+                Vec3::new(0.0, HEIGHT - 2.0 * THICKNESS, 0.0),
                 Vec3::new(WIDTH, 0.0, 0.0),
                 svrnc.mats.white(),
             ));
@@ -802,15 +797,15 @@ impl Svrnc {
             ));
             fill_top = Arc::new(RotationX::new(fill_top, -angle));
 
-            left_panel.push(b_panel);
-            left_panel.push(b_triangle);
-            left_panel.push(u_panel);
-            left_panel.push(u_triangle);
+            right_panel.push(b_panel);
+            right_panel.push(b_triangle);
+            right_panel.push(u_panel);
+            right_panel.push(u_triangle);
 
-            let left_panel = Arc::new(left_panel);
+            let right_panel = Arc::new(right_panel);
 
-            let mut right_panel: Arc<dyn Primitive> = Arc::new(MirrorYZ::new(left_panel.clone()));
-            right_panel = Arc::new(Translation::new(right_panel, Vec3::new(WIDTH, 0.0, 0.0)));
+            let mut left_panel: Arc<dyn Primitive> = Arc::new(MirrorYZ::new(right_panel.clone()));
+            left_panel = Arc::new(Translation::new(left_panel, Vec3::new(WIDTH, 0.0, 0.0)));
 
             block.push(fill_back);
             block.push(fill_bottom);
@@ -838,7 +833,7 @@ impl Svrnc {
 
             let top = Arc::new(Translation::new(
                 h_panel.clone(),
-                Vec3::new(0.0, INNER_HEIGHT, 3.0),
+                Vec3::new(3.0, INNER_HEIGHT, 3.0),
             ));
 
             let right = Arc::new(Translation::new(
@@ -847,11 +842,11 @@ impl Svrnc {
             ));
 
             let left = Arc::new(Translation::new(
-                v_panel.clone(),
+                v_panel,
                 Vec3::new(INNER_WIDTH, INNER_THICKNESS, 3.0),
             ));
 
-            let bottom = Arc::new(Translation::new(h_panel.clone(), Vec3::new(3.0, 3.0, 3.0)));
+            let bottom = Arc::new(Translation::new(h_panel, Vec3::new(3.0, 3.0, 3.0)));
 
             block.push(top);
             block.push(bottom);
@@ -993,7 +988,6 @@ impl Svrnc {
             h_panel = Arc::new(Translation::new(
                 h_panel,
                 Vec3::new(
-                    // THICKNESS,
                     0.0,
                     SUPPORT_OFFSET + THICKNESS,
                     DEPTH * 0.5 - SUPPORT_DEPTH * 0.5,
@@ -1038,7 +1032,6 @@ impl Svrnc {
 
             let mut c_base: Arc<dyn Primitive> = Arc::new(Cylinder::new(
                 Point3::ORIGIN,
-                // WIDTH * 0.10,
                 SUPPORT_DEPTH * 0.5 - 1.0,
                 THICKNESS,
                 svrnc.mats.white(),
@@ -1156,7 +1149,7 @@ impl Svrnc {
             Vec3::new(
                 location_box_w - Self::TABLE_WIDTH * 0.5 - WIDTH * 0.5,
                 offset_from_ground + (HEIGHT * 0.5) + 2.0,
-                location_box_d - Self::TABLE_DEPTH + DEPTH * 0.5,
+                location_box_d - Self::TABLE_DEPTH + DEPTH * 0.5 - Self::PANEL_DEPTH - 5.0,
             ),
         ));
 
@@ -1165,7 +1158,7 @@ impl Svrnc {
             Vec3::new(
                 location_box_w - Self::TABLE_WIDTH * 0.5 - KEYBOARD_WIDTH * 0.5,
                 offset_from_ground + 0.1,
-                location_box_d - KEYBOARD_DEPTH - Self::TABLE_DEPTH,
+                location_box_d - Self::TABLE_DEPTH - KEYBOARD_DEPTH * 0.5 - 5.0,
             ),
         ));
         r_terminal.push(r_monitor);

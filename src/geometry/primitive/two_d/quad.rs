@@ -133,10 +133,6 @@ impl Primitive for Quad {
         let distance_squared = (rec.get_point() - origin).len_squared();
         let cosine = f32::abs(direction.dot(rec.get_normal()) / norm_squared.sqrt());
 
-        if cosine.is_nan() || cosine.is_infinite() {
-            println!("aca hay otro");
-        }
-
         distance_squared / (self.area * cosine)
     }
 

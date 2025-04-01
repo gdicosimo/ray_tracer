@@ -1,6 +1,6 @@
 # Ray Tracer in Rust
 
-<!-- ![Render Example](assets/renders/svrnc.png) -->
+![Render Example](assets/renders/svrnc.png)
 
 A physically based Monte Carlo path tracer implemented entirely using Rust, based on Peter Shirley's _Ray Tracing in One Weekend_ series, this project serves as both a learning tool for Rust and a engine for generating high-quality rendered images.
 
@@ -13,9 +13,9 @@ Includes CLI commands that allow you to modify the selected scene and camera con
 
 ### Prerequisites
 
-  [![Rust](https://img.shields.io/badge/Rust-1.70%2B-orange.svg)](https://www.rust-lang.org)
-  [![Cargo](https://img.shields.io/badge/Cargo-1.70%2B-blue.svg)](https://doc.rust-lang.org/cargo/)
-  
+[![Rust](https://img.shields.io/badge/Rust-1.70%2B-orange.svg)](https://www.rust-lang.org)
+[![Cargo](https://img.shields.io/badge/Cargo-1.70%2B-blue.svg)](https://doc.rust-lang.org/cargo/)
+
 ### Building and Running the Project
 
 Clone the repository and build in release mode for best performance:
@@ -56,9 +56,9 @@ For example, you can run the ray tracer with custom scene and camera settings:
 target/release/ray_tracer \
   --output render.png \
   --width 1920 \
-  --aspect-ratio 1.77 \  
+  --aspect-ratio 1.77 \
   # 1.77 is equivalent to 16:9 (1920/1.77 ≈ 1080 height)
-  --samples_per_pixel 500 \  
+  --samples_per_pixel 500 \
   # Determines how many rays are sampled for each pixel
   --scene cornell_box
 ```
@@ -70,11 +70,11 @@ Adjust camera settings via the CLI. For example:
 ```bash
 cargo run --release -- \
   --scene cornell_box \
-  --lookfrom 3,2,5 \      
+  --lookfrom 3,2,5 \
   # Camera position (x,y,z)
-  --lookat 0,0,0 \        
+  --lookat 0,0,0 \
   # Focus point
-  --vfov 60               
+  --vfov 60
   # Vertical field of view (degrees)
 ```
 

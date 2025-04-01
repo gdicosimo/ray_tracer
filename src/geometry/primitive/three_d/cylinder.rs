@@ -29,7 +29,7 @@ impl Cylinder {
 
     fn intersect_caps(&self, ray: &Ray, cap_y: f32, ray_t: &Interval) -> Option<HitRecord> {
         let dir_y = ray.direction().y();
-        if dir_y.abs() < 1e-6 {
+        if dir_y.abs() < EPSILON {
             return None;
         }
 
@@ -64,7 +64,7 @@ impl Cylinder {
         let dir = ray.direction();
 
         let a = dir.x().powi(2) + dir.z().powi(2);
-        if a < 1e-6 {
+        if a < EPSILON {
             return None;
         }
 
